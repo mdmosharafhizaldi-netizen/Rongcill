@@ -67,8 +67,28 @@ try {
   if (!/^sb_publishable_[A-Za-z0-9_-]+$/.test(SUPABASE_KEY)) {
     throw new Error('Publishable Key সঠিকভাবে বসান।');
   }
+const diagnosticFetch = async (url, options = {}) => {
+  const headers = options.headers || {};
+  const entries = headers instanceof Headers
+    ? [...headers.entries()]
+    : Object.entries(headers);
 
-  supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+  const bad = entries.filter(([key, value]) =>
+    /[^\x00-\xFF]/.test(String(value))
+  );
+
+  if (bad.length) {
+    throw new Error(
+      'সমস্যাযুক্ত Header: ' + bad.map(item => item[0]).join(', ')
+    );
+  }
+
+  return fetch(url, options);
+};
+
+supabase = createClient(SUPABASE_URL, SUPABASE_KEY, {
+  global: { fetch: diagnosticFetch }
+});
 } catch (error) {
   loginMsg.textContent = error.message;
   loginBtn.disabled = true;
