@@ -1,7 +1,54 @@
-echo "# Rongcill" >> README.md
-git init
-git add README.md
-git commit -m "first commit"
-git branch -M main
-git remote add origin https://github.com/mdmosharafhizaldi-netizen/Rongcill.git
-git push -u origin main
+
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>রঙচিল | স্বপ্নের ছোঁয়া</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:#f8f8f8;color:#222}
+header{background:#7b2cbf;color:white;padding:22px;text-align:center}
+header h1{margin:0;font-size:32px}
+header p{margin:8px 0 0}
+nav{background:#5a189a;padding:12px;text-align:center}
+nav a{color:white;text-decoration:none;margin:10px}
+.hero{text-align:center;padding:55px 15px;background:#eee0ff}
+.hero h2{color:#5a189a;font-size:28px}
+button{background:#7b2cbf;color:white;border:0;padding:12px 22px;border-radius:6px;font-size:16px}
+section{padding:25px 15px;text-align:center}
+.product{background:white;padding:25px;margin:15px auto;max-width:350px;border-radius:10px;box-shadow:0 2px 8px #ddd}
+footer{background:#333;color:white;text-align:center;padding:20px}
+</style>
+</head>
+<body>
+<header>
+<h1>রঙচিল</h1>
+<p>স্বপ্নের ছোঁয়া</p>
+</header>
+<nav>
+<a href="#home">হোম</a>
+<a href="#products">পণ্য</a>
+<a href="#contact">যোগাযোগ</a>
+</nav>
+<div class="hero" id="home">
+<h2>রঙচিলে আপনাকে স্বাগতম</h2>
+<p>আপনার পছন্দের পণ্য খুঁজে নিন আমাদের কাছে।</p>
+<button onclick="document.getElementById('products').scrollIntoView()">পণ্য দেখুন</button>
+</div>
+<section id="products">
+<h2>আমাদের পণ্য</h2>
+<div class="product">
+<h3>নতুন পণ্য আসছে</h3>
+<p>খুব শিগগিরই আমাদের পণ্যের তালিকা প্রকাশ করা হবে।</p>
+</div>
+</section>
+<section id="contact">
+<h2>যোগাযোগ</h2>
+<p>রঙচিল — স্বপ্নের ছোঁয়া</p>
+</section>
+<footer>
+<p>© 2026 রঙচিল। সর্বস্বত্ব সংরক্ষিত।</p>
+</footer>
+</body>
+</html>
