@@ -53,7 +53,7 @@ import { createClient } from
 const SUPABASE_URL =
 'https://yjzqtdnpgamuivxxrukv.supabase.co';
 
-const SUPABASE_KEY = 'আপনার_আগের_Publishable_Key';
+const SUPABASE_KEY = 'sb_publishable_HkzSNDAO1Hpqenbnqah0Kg_0lFSJKu8';
 
 const loginMsg = document.getElementById('loginMsg');
 const msg = document.getElementById('msg');
