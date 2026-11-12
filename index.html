@@ -6,76 +6,133 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>রঙচিল | স্বপ্নের ছোঁয়া</title>
 <style>
+*{box-sizing:border-box}
 body{font-family:Arial,sans-serif;margin:0;background:#f8f5fa;color:#222}
 header{background:#713b83;color:white;text-align:center;padding:25px}
-nav{background:white;padding:15px;text-align:center}
-nav a{margin:10px;color:#713b83;text-decoration:none}
-.container{max-width:600px;margin:25px auto;padding:15px}
-.card{background:white;padding:20px;border-radius:12px;margin:15px 0}
-button{background:#713b83;color:white;border:0;padding:12px 18px;border-radius:7px}
-input{width:95%;padding:12px;margin:8px 0;border:1px solid #ccc;border-radius:6px}
-.hidden{display:none}
+nav{background:white;padding:15px;text-align:center;position:sticky;top:0}
+nav a{margin:8px;color:#713b83;text-decoration:none}
+.container{max-width:850px;margin:20px auto;padding:15px}
+.card{background:white;padding:18px;border-radius:12px;margin:15px 0}
+button{background:#713b83;color:white;border:0;padding:12px 18px;border-radius:7px;cursor:pointer}
+.products{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:15px}
+.product{background:white;padding:12px;border-radius:10px;box-shadow:0 2px 8px #ddd}
+.product img{width:100%;height:150px;object-fit:contain}
+.product h3{font-size:17px}
+.price{color:#713b83;font-weight:bold}
 footer{text-align:center;padding:20px;background:#eee}
 </style>
 </head>
 <body>
+
 <header>
 <h1>রঙচিল</h1>
 <p>স্বপ্নের ছোঁয়া</p>
 </header>
+
 <nav>
 <a href="#home">হোম</a>
 <a href="#products">পণ্য</a>
 <a href="#contact">যোগাযোগ</a>
 </nav>
+
 <div class="container" id="home">
 <div class="card">
 <h2>রঙচিলে আপনাকে স্বাগতম</h2>
 <p>আপনার পছন্দের পণ্য কিনুন রঙচিল থেকে।</p>
 </div>
-<div class="card" id="products">
-<h2>আমাদের পণ্য</h2>
-<p>নতুন পণ্য আসছে।</p>
-<p>পণ্যের বিস্তারিত জানতে অথবা অর্ডার করতে যোগাযোগ করুন।</p>
+
+<h2 id="products">আমাদের পণ্য</h2>
+<div id="productList" class="products">
+<p>পণ্য লোড হচ্ছে...</p>
+</div>
+
+<div class="card" id="contact">
+<h2>যোগাযোগ</h2>
+<p>WhatsApp: 8801611385067</p>
 <a href="https://wa.me/8801611385067">
 <button>WhatsApp-এ অর্ডার করুন</button>
 </a>
 </div>
-<div class="card" id="contact">
-<h2>যোগাযোগ</h2>
-<p>WhatsApp: 8801611385067</p>
-</div>
-<div class="card">
-<h2>Admin Panel</h2>
-<button onclick="showLogin()">Admin Login</button>
-<div id="loginBox" class="hidden">
-<input id="email" type="email" placeholder="আপনার Gmail">
-<input id="password" type="password" placeholder="পাসওয়ার্ড">
-<button onclick="login()">লগইন করুন</button>
-<p id="message"></p>
+
+<div class="card" style="text-align:center">
+<h3>Admin Panel</h3>
+<a href="admin.html">
+<button>Admin Login</button>
+</a>
 </div>
 </div>
-</div>
+
 <footer>© 2026 রঙচিল | স্বপ্নের ছোঁয়া</footer>
-<script>
-function showLogin(){
-document.getElementById("loginBox").classList.toggle("hidden");
-}
-</script>
+
 <script type="module">
-import {createClient} from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+import {createClient} from
+'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+
 const supabase=createClient(
 'https://fstxhzsvvzthqqcisfdz.supabase.co',
 'sb_publishable_k8cAOGYerAOOFsf_UghhyQ_WfVu8buP'
 );
-window.login=async function(){
-const email=document.getElementById("email").value.trim();
-const password=document.getElementById("password").value;
-const message=document.getElementById("message");
-message.textContent="লগইন হচ্ছে...";
-const {error}=await supabase.auth.signInWithPassword({email,password});
-message.textContent=error?"লগইন হয়নি: "+error.message:"লগইন সফল হয়েছে!";
+
+async function loadProducts(){
+const box=document.getElementById('productList');
+
+const {data,error}=await supabase
+.from('products')
+.select('id,name,description,price,category,image_url')
+.eq('is_active',true)
+.order('id',{ascending:false});
+
+if(error){
+box.textContent='পণ্য লোড হয়নি: '+error.message;
+return;
+}
+
+box.innerHTML='';
+
+if(!data || data.length===0){
+box.textContent='নতুন পণ্য আসছে।';
+return;
+}
+
+data.forEach(p=>{
+const item=document.createElement('div');
+item.className='product';
+
+if(p.image_url){
+const img=document.createElement('img');
+img.src=p.image_url;
+img.alt=p.name;
+item.appendChild(img);
+}
+
+const title=document.createElement('h3');
+title.textContent=p.name;
+item.appendChild(title);
+
+const price=document.createElement('p');
+price.className='price';
+price.textContent='দাম: '+p.price+' টাকা';
+item.appendChild(price);
+
+if(p.description){
+const desc=document.createElement('p');
+desc.textContent=p.description;
+item.appendChild(desc);
+}
+
+const order=document.createElement('button');
+order.textContent='WhatsApp-এ অর্ডার';
+order.onclick=()=>{
+const message='আমি '+p.name+' অর্ডার করতে চাই। দাম: '+p.price+' টাকা';
+window.open('https://wa.me/8801611385067?text='+encodeURIComponent(message),'_blank');
 };
+item.appendChild(order);
+
+box.appendChild(item);
+});
+}
+
+loadProducts();
 </script>
 </body>
 </html>
