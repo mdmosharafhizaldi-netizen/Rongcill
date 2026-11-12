@@ -7,257 +7,88 @@
 <title>রঙচিল | স্বপ্নের ছোঁয়া</title>
 <style>
 *{box-sizing:border-box}
-:root{
- --primary:#713b91;
- --secondary:#a65bc0;
- --pink:#f5e9fa;
- --dark:#292034;
- --muted:#756b7c;
- --white:#fff;
-}
-body{
- margin:0;
- font-family:Arial,"Noto Sans Bengali",sans-serif;
- background:#faf8fc;
- color:var(--dark);
-}
-header{
- background:linear-gradient(120deg,#55246f,#8c49a7,#bd78c9);
- color:white;
- padding:22px 15px 35px;
- text-align:center;
-}
-.topbar{
- max-width:1100px;
- margin:auto;
- display:flex;
- justify-content:space-between;
- align-items:center;
- flex-wrap:wrap;
- gap:12px;
-}
-.logo{
- font-size:28px;
- font-weight:bold;
- letter-spacing:1px;
-}
-.topbar a{
- color:white;
- text-decoration:none;
- margin:0 8px;
- font-size:14px;
-}
-.hero{
- max-width:900px;
- margin:40px auto 0;
- padding:25px 10px;
-}
-.hero h1{
- font-size:42px;
- margin:0 0 12px;
-}
-.hero p{
- font-size:17px;
- line-height:1.8;
- margin:8px 0;
-}
-.hero .tag{
- display:inline-block;
- background:#ffffff25;
- border:1px solid #ffffff55;
- padding:7px 16px;
- border-radius:30px;
- font-size:13px;
- margin-bottom:15px;
-}
-.container{
- max-width:1100px;
- margin:auto;
- padding:25px 16px;
-}
-.section-title{
- text-align:center;
- margin:15px 0 25px;
-}
-.section-title h2{
- color:var(--primary);
- font-size:28px;
- margin-bottom:8px;
-}
-.section-title p{color:var(--muted)}
-.products{
- display:grid;
- grid-template-columns:repeat(auto-fit,minmax(270px,1fr));
- gap:22px;
-}
-.card{
- background:white;
- border:1px solid #eee5f2;
- border-radius:18px;
- padding:16px;
- box-shadow:0 5px 22px #4220520c;
- transition:.2s;
-}
-.card:hover{
- transform:translateY(-4px);
- box-shadow:0 10px 28px #42205218;
-}
-.product-image{
- width:100%;
- height:230px;
- object-fit:contain;
- background:#faf7fc;
- border-radius:13px;
-}
-.card h3{
- color:var(--primary);
- font-size:20px;
- margin:15px 0 8px;
-}
-.card p{
- line-height:1.6;
- font-size:14px;
-}
-.price{
- color:#c13d8c;
- font-size:22px!important;
- font-weight:bold;
-}
+body{margin:0;font-family:Arial,sans-serif;background:#faf7fc;color:#30243a}
+header{background:linear-gradient(135deg,#45205d,#8444a0,#bd79c9);color:white;padding:18px 15px 45px}
+nav{max-width:1100px;margin:auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:15px}
+.logo{font-size:30px;font-weight:bold}
+nav a{color:white;text-decoration:none;margin-left:15px;font-size:14px}
+.hero{text-align:center;max-width:800px;margin:45px auto 0}
+.hero span{background:#ffffff25;border:1px solid #ffffff55;padding:8px 18px;border-radius:30px}
+.hero h1{font-size:40px;margin:25px 0 12px}
+.hero p{line-height:1.8;font-size:17px}
+.container{max-width:1100px;margin:auto;padding:25px 15px}
+.heading{text-align:center;margin:20px 0 28px}
+.heading h2{color:#713b91;font-size:28px}
+.heading p{color:#786b80}
+.products{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:22px}
+.card{background:white;border:1px solid #eee5f2;border-radius:18px;padding:16px;box-shadow:0 5px 20px #46205212}
+.card img{width:100%;height:230px;object-fit:contain;background:#faf7fc;border-radius:12px}
+.card h3{color:#713b91;font-size:20px}
+.card p{font-size:14px;line-height:1.7}
+.price{color:#c13d8c;font-size:22px!important;font-weight:bold}
 .stock{color:#21864b}
-input,textarea,select,button{
- width:100%;
- padding:12px;
- margin:6px 0;
- border:1px solid #e2d9e8;
- border-radius:9px;
- font-size:15px;
- font-family:inherit;
-}
-input:focus,textarea:focus,select:focus{
- outline:2px solid #c79cdb;
- border-color:var(--primary);
-}
-textarea{min-height:75px;resize:vertical}
-button{
- background:linear-gradient(120deg,#713b91,#a65bc0);
- color:white;
- border:0;
- font-weight:bold;
- cursor:pointer;
- transition:.2s;
-}
-button:hover{filter:brightness(1.08)}
-button:disabled{background:#999;cursor:not-allowed}
-.whatsapp{
- background:#159b55;
-}
-.payment-info{
- background:#f7effb;
- padding:12px;
- border-radius:9px;
- color:#66347e;
- font-size:14px;
- margin:8px 0;
- line-height:1.7;
-}
-#message{
- text-align:center;
- font-weight:bold;
- color:var(--primary);
- padding:10px;
-}
-.features{
- display:grid;
- grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
- gap:15px;
- margin:30px 0;
-}
-.feature{
- background:white;
- border:1px solid #eee5f2;
- padding:22px 15px;
- text-align:center;
- border-radius:15px;
-}
-.feature h3{color:var(--primary)}
-.feature p{color:var(--muted);font-size:14px}
-footer{
- background:#35203f;
- color:white;
- text-align:center;
- padding:30px 15px;
- margin-top:35px;
- line-height:1.8;
-}
-footer a{color:#f1c9ff}
-@media(max-width:600px){
- .hero h1{font-size:32px}
- .topbar{justify-content:center}
- .topbar nav{width:100%;text-align:center}
- .topbar a{margin:0 5px}
- .section-title h2{font-size:24px}
-}
+input,textarea,select,button{width:100%;padding:12px;margin:6px 0;border:1px solid #e1d6e8;border-radius:9px;font-size:15px}
+textarea{min-height:75px}
+button{background:linear-gradient(120deg,#713b91,#a65bc0);color:white;border:0;font-weight:bold;cursor:pointer}
+button:disabled{background:#999}
+.whatsapp{background:#159b55}
+.payment-info{background:#f7effb;padding:12px;border-radius:9px;color:#66347e;font-size:14px;line-height:1.7}
+#message{text-align:center;color:#713b91;font-weight:bold}
+.features{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:15px;margin:35px 0}
+.feature{background:white;padding:22px;text-align:center;border:1px solid #eee5f2;border-radius:15px}
+.feature h3{color:#713b91}
+.feature p{color:#786b80;font-size:14px}
+footer{background:#35203f;color:white;text-align:center;padding:30px 15px;margin-top:30px;line-height:1.8}
+@media(max-width:600px){.hero h1{font-size:30px}nav{justify-content:center}nav a{margin:0 6px}}
 </style>
 </head>
 <body>
 
 <header>
- <div class="topbar">
-  <div class="logo">রঙচিল</div>
-  <nav>
-   <a href="#home">হোম</a>
-   <a href="#products">পণ্যসমূহ</a>
-   <a href="#features">সুবিধা</a>
-   <a href="#contact">যোগাযোগ</a>
-  </nav>
- </div>
-
- <div class="hero" id="home">
-  <span class="tag">স্বাগতম রঙচিলে</span>
-  <h1>রঙচিল | স্বপ্নের ছোঁয়া</h1>
-  <p>আপনার পছন্দের পণ্য, এখন আপনার হাতেই।</p>
-  <p>সহজ অর্ডার, নিরাপদ কেনাকাটা এবং বিশ্বস্ত সেবা।</p>
- </div>
+<nav>
+<div class="logo">রঙচিল</div>
+<div>
+<a href="#home">হোম</a>
+<a href="#products">পণ্য</a>
+<a href="#features">সুবিধা</a>
+<a href="#contact">যোগাযোগ</a>
+</div>
+</nav>
+<div class="hero" id="home">
+<span>স্বাগতম রঙচিলে</span>
+<h1>রঙচিল | স্বপ্নের ছোঁয়া</h1>
+<p>আপনার পছন্দের পণ্য, এখন আপনার হাতেই।<br>সহজ অর্ডার, সুন্দর কেনাকাটা ও বিশ্বস্ত সেবা।</p>
+</div>
 </header>
 
 <main class="container">
- <section id="products">
-  <div class="section-title">
-   <h2>আমাদের পণ্যসমূহ</h2>
-   <p>আপনার পছন্দের পণ্যটি বেছে নিন</p>
-  </div>
-  <p id="message">পণ্য লোড হচ্ছে...</p>
-  <div class="products" id="productsBox"></div>
- </section>
+<section id="products">
+<div class="heading">
+<h2>আমাদের পণ্যসমূহ</h2>
+<p>আপনার পছন্দের পণ্যটি বেছে নিন</p>
+</div>
+<p id="message">পণ্য লোড হচ্ছে...</p>
+<div class="products" id="productsBox"></div>
+</section>
 
- <section id="features">
-  <div class="section-title">
-   <h2>কেন রঙচিল?</h2>
-   <p>আপনার কেনাকাটা সহজ করাই আমাদের লক্ষ্য</p>
-  </div>
-  <div class="features">
-   <div class="feature">
-    <h3>সহজ অর্ডার</h3>
-    <p>ওয়েবসাইট থেকেই সহজে অর্ডার করুন।</p>
-   </div>
-   <div class="feature">
-    <h3>ক্যাশ অন ডেলিভারি</h3>
-    <p>পণ্য হাতে পেয়ে টাকা পরিশোধের সুবিধা।</p>
-   </div>
-   <div class="feature">
-    <h3>সহজ পেমেন্ট</h3>
-    <p>বিকাশ, নগদ ও রকেট পেমেন্টের সুবিধা।</p>
-   </div>
-  </div>
- </section>
+<section id="features">
+<div class="heading">
+<h2>কেন রঙচিল?</h2>
+<p>আপনার কেনাকাটা সহজ করাই আমাদের লক্ষ্য</p>
+</div>
+<div class="features">
+<div class="feature"><h3>সহজ অর্ডার</h3><p>ওয়েবসাইট থেকেই অর্ডার করুন।</p></div>
+<div class="feature"><h3>ক্যাশ অন ডেলিভারি</h3><p>পণ্য হাতে পেয়ে টাকা দিন।</p></div>
+<div class="feature"><h3>সহজ পেমেন্ট</h3><p>বিকাশ, নগদ ও রকেট সুবিধা।</p></div>
+</div>
+</section>
 </main>
 
 <footer id="contact">
- <h2>রঙচিল</h2>
- <p>স্বপ্নের ছোঁয়া</p>
- <p>অর্ডার ও যোগাযোগ: 01611385067</p>
- <p>ধন্যবাদ আমাদের সঙ্গে থাকার জন্য।</p>
- <p>© 2026 রঙচিল। সর্বস্বত্ব সংরক্ষিত।</p>
+<h2>রঙচিল</h2>
+<p>স্বপ্নের ছোঁয়া</p>
+<p>অর্ডার ও যোগাযোগ: 01611385067</p>
+<p>© 2026 রঙচিল। সর্বস্বত্ব সংরক্ষিত।</p>
 </footer>
 
 <script type="module">
@@ -314,7 +145,6 @@ async function loadProducts(){
    const img=make('img');
    img.src=p.image_url;
    img.alt=p.name;
-   img.className='product-image';
    card.appendChild(img);
   }
 
@@ -354,15 +184,9 @@ async function loadProducts(){
   quantity.placeholder='পরিমাণ';
 
   const payment=make('select');
-
-  [
-   ['ক্যাশ অন ডেলিভারি','ক্যাশ অন ডেলিভারি'],
-   ['বিকাশ','বিকাশ'],
-   ['নগদ','নগদ'],
-   ['রকেট','রকেট']
-  ].forEach(([value,label])=>{
-   const option=make('option',label);
-   option.value=value;
+  ['ক্যাশ অন ডেলিভারি','বিকাশ','নগদ','রকেট'].forEach(method=>{
+   const option=make('option',method);
+   option.value=method;
    payment.appendChild(option);
   });
 
@@ -379,14 +203,11 @@ async function loadProducts(){
 
   payment.onchange=()=>{
    const method=payment.value;
-
    if(method==='ক্যাশ অন ডেলিভারি'){
     paymentInfo.textContent='পণ্য হাতে পেয়ে টাকা পরিশোধ করুন।';
     transaction.style.display='none';
    }else{
-    paymentInfo.textContent=
-     method+' নম্বর: '+PAYMENT_NUMBERS[method]+
-     '। টাকা পাঠিয়ে Transaction ID দিন।';
+    paymentInfo.textContent=method+' নম্বর: '+PAYMENT_NUMBERS[method]+'। টাকা পাঠিয়ে Transaction ID দিন।';
     transaction.style.display='block';
    }
   };
@@ -413,12 +234,10 @@ async function loadProducts(){
     alert('নাম, মোবাইল ও ঠিকানা পূরণ করুন');
     return;
    }
-
    if(!Number.isInteger(q)||q<1||q>100||q>stock){
     alert('সঠিক পরিমাণ দিন। পর্যাপ্ত স্টক নেই।');
     return;
    }
-
    if(method!=='ক্যাশ অন ডেলিভারি'&&trx.length<4){
     alert('Transaction ID লিখুন');
     return;
@@ -439,19 +258,14 @@ async function loadProducts(){
     });
 
     if(error)throw error;
-
     const result=Array.isArray(data)?data[0]:data;
 
-    alert(
-     'অর্ডার সফল হয়েছে!'+
-     '\nঅর্ডার নম্বর: '+result.order_id+
+    alert('অর্ডার সফল হয়েছে!\nঅর্ডার নম্বর: '+result.order_id+
      '\nমোট টাকা: '+result.total_amount+' টাকা'+
      '\nপেমেন্ট: '+method+
-     '\nপেমেন্ট যাচাই করে অর্ডার নিশ্চিত করা হবে।'
-    );
+     '\nপেমেন্ট যাচাই করে অর্ডার নিশ্চিত করা হবে।');
 
     await loadProducts();
-
    }catch(error){
     alert('অর্ডার হয়নি: '+error.message);
     orderButton.disabled=false;
@@ -469,27 +283,17 @@ async function loadProducts(){
     alert('নাম, মোবাইল ও ঠিকানা পূরণ করুন');
     return;
    }
-
    if(!Number.isInteger(q)||q<1||q>stock){
     alert('সঠিক পরিমাণ দিন');
     return;
    }
 
-   const text=
-    'রঙচিল থেকে অর্ডার করতে চাই।\n'+
-    'পণ্য: '+p.name+'\n'+
-    'দাম: '+p.price+' টাকা\n'+
-    'পরিমাণ: '+q+'\n'+
-    'পেমেন্ট: '+payment.value+'\n'+
-    'নাম: '+customer+'\n'+
-    'মোবাইল: '+mobile+'\n'+
-    'ঠিকানা: '+location;
+   const text='রঙচিল থেকে অর্ডার করতে চাই।\n'+
+    'পণ্য: '+p.name+'\nদাম: '+p.price+' টাকা\nপরিমাণ: '+q+
+    '\nপেমেন্ট: '+payment.value+'\nনাম: '+customer+
+    '\nমোবাইল: '+mobile+'\nঠিকানা: '+location;
 
-   window.open(
-    'https://wa.me/'+WHATSAPP+
-    '?text='+encodeURIComponent(text),
-    '_blank'
-   );
+   window.open('https://wa.me/'+WHATSAPP+'?text='+encodeURIComponent(text),'_blank');
   };
 
   card.appendChild(name);
@@ -502,7 +306,6 @@ async function loadProducts(){
   card.appendChild(transaction);
   card.appendChild(orderButton);
   card.appendChild(whatsappButton);
-
   productsBox.appendChild(card);
  });
 }
