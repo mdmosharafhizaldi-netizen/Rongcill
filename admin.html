@@ -75,7 +75,7 @@ document.getElementById('login').classList.add('hidden');
 document.getElementById('panel').classList.remove('hidden');
 await loadProducts();
 }
-await loadOrders();
+await window.loadOrders();
 window.logout=async function(){
 await supabase.auth.signOut();
 document.getElementById('panel').classList.add('hidden');
