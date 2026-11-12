@@ -46,7 +46,10 @@ button{background:#7027a0;color:white;border:0;font-size:16px}
 <div id="products">লোড হচ্ছে...</div>
 </div>
 </div>
-
+<hr>
+<h3>কাস্টমারের অর্ডার</h3>
+<button onclick="loadOrders()">অর্ডার রিফ্রেশ করুন</button>
+<div id="orders">অর্ডার লোড হচ্ছে...</div>
 <script type="module">
 import {createClient} from
 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
@@ -72,7 +75,7 @@ document.getElementById('login').classList.add('hidden');
 document.getElementById('panel').classList.remove('hidden');
 await loadProducts();
 }
-
+await loadOrders();
 window.logout=async function(){
 await supabase.auth.signOut();
 document.getElementById('panel').classList.add('hidden');
@@ -138,6 +141,73 @@ const {error}=await supabase.from('products').delete().eq('id',id);
 if(error){alert(error.message);return;}
 alert('পণ্য মুছে ফেলা হয়েছে');
 await loadProducts();
+};window.loadOrders = async function(){
+const box=document.getElementById('orders');
+box.textContent='অর্ডার লোড হচ্ছে...';
+
+const {data,error}=await supabase
+.from('orders')
+.select('*')
+.order('id',{ascending:false});
+
+if(error){
+box.textContent='অর্ডার লোড হয়নি: '+error.message;
+return;
+}
+
+box.innerHTML='';
+
+if(!data.length){
+box.textContent='এখনো কোনো অর্ডার নেই।';
+return;
+}
+
+data.forEach(o=>{
+const item=document.createElement('div');
+item.className='product';
+
+const info=document.createElement('p');
+info.textContent=
+'অর্ডার #'+o.id+
+' | কাস্টমার: '+o.customer_name+
+' | ফোন: '+o.phone+
+' | ঠিকানা: '+o.address+
+' | পণ্য ID: '+o.product_id+
+' | পরিমাণ: '+o.quantity+
+' | মোট: '+o.total_amount+' টাকা'+
+' | অবস্থা: '+o.status;
+
+item.appendChild(info);
+
+const select=document.createElement('select');
+
+['নতুন','নিশ্চিত','প্রস্তুত','পাঠানো','সম্পন্ন','বাতিল'].forEach(s=>{
+const option=document.createElement('option');
+option.value=s;
+option.textContent=s;
+if(o.status===s) option.selected=true;
+select.appendChild(option);
+});
+
+item.appendChild(select);
+
+const btn=document.createElement('button');
+btn.textContent='স্ট্যাটাস সেভ করুন';
+
+btn.onclick=async()=>{
+const {error}=await supabase
+.from('orders')
+.update({status:select.value})
+.eq('id',o.id);
+
+if(error){alert('সেভ হয়নি: '+error.message);return;}
+alert('অর্ডারের স্ট্যাটাস পরিবর্তন হয়েছে!');
+await window.loadOrders();
+};
+
+item.appendChild(btn);
+box.appendChild(item);
+});
 };
 async function loadProducts(){
 const box=document.getElementById('products');
