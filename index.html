@@ -1,24 +1,21 @@
 
-
 <!DOCTYPE html>
 <html lang="bn">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>রঙচিল | স্বপ্নের ছোঁয়া</title>
 <style>
-*{box-sizing:border-box}
-body{margin:0;font-family:Arial,sans-serif;background:#f8f8f8;color:#222}
-header{background:#7b2cbf;color:white;padding:22px;text-align:center}
-header h1{margin:0;font-size:32px}
-nav{background:#5a189a;padding:14px;text-align:center}
-nav a{color:white;text-decoration:none;margin:12px}
-.hero{text-align:center;padding:45px 15px;background:#eee0ff}
-.hero h2{color:#5a189a}
-section{text-align:center;padding:25px 15px}
-.product{background:white;padding:25px;margin:15px auto;max-width:350px;border-radius:10px;box-shadow:0 2px 8px #ddd}
-.order{display:inline-block;background:#168b45;color:white;padding:13px 20px;border-radius:7px;text-decoration:none}
-footer{background:#333;color:white;text-align:center;padding:20px}
+body{font-family:Arial,sans-serif;margin:0;background:#f8f5fa;color:#222}
+header{background:#713b83;color:white;text-align:center;padding:25px}
+nav{background:white;padding:15px;text-align:center}
+nav a{margin:10px;color:#713b83;text-decoration:none}
+.container{max-width:600px;margin:25px auto;padding:15px}
+.card{background:white;padding:20px;border-radius:12px;margin:15px 0}
+button{background:#713b83;color:white;border:0;padding:12px 18px;border-radius:7px}
+input{width:95%;padding:12px;margin:8px 0;border:1px solid #ccc;border-radius:6px}
+.hidden{display:none}
+footer{text-align:center;padding:20px;background:#eee}
 </style>
 </head>
 <body>
@@ -31,24 +28,54 @@ footer{background:#333;color:white;text-align:center;padding:20px}
 <a href="#products">পণ্য</a>
 <a href="#contact">যোগাযোগ</a>
 </nav>
-<div class="hero" id="home">
+<div class="container" id="home">
+<div class="card">
 <h2>রঙচিলে আপনাকে স্বাগতম</h2>
 <p>আপনার পছন্দের পণ্য কিনুন রঙচিল থেকে।</p>
 </div>
-<section id="products">
+<div class="card" id="products">
 <h2>আমাদের পণ্য</h2>
-<div class="product">
-<h3>নতুন পণ্য আসছে</h3>
+<p>নতুন পণ্য আসছে।</p>
 <p>পণ্যের বিস্তারিত জানতে অথবা অর্ডার করতে যোগাযোগ করুন।</p>
-<a class="order" href="https://wa.me/8801611385067?text=আমি%20রঙচিল%20থেকে%20পণ্য%20অর্ডার%20করতে%20চাই" target="_blank">WhatsApp-এ অর্ডার করুন</a>
+<a href="https://wa.me/8801611385067">
+<button>WhatsApp-এ অর্ডার করুন</button>
+</a>
 </div>
-</section>
-<section id="contact">
+<div class="card" id="contact">
 <h2>যোগাযোগ</h2>
 <p>WhatsApp: 8801611385067</p>
-</section>
-<footer>
-<p>© 2026 রঙচিল | স্বপ্নের ছোঁয়া</p>
-</footer>
+</div>
+<div class="card">
+<h2>Admin Panel</h2>
+<button onclick="showLogin()">Admin Login</button>
+<div id="loginBox" class="hidden">
+<input id="email" type="email" placeholder="আপনার Gmail">
+<input id="password" type="password" placeholder="পাসওয়ার্ড">
+<button onclick="login()">লগইন করুন</button>
+<p id="message"></p>
+</div>
+</div>
+</div>
+<footer>© 2026 রঙচিল | স্বপ্নের ছোঁয়া</footer>
+<script>
+function showLogin(){
+document.getElementById("loginBox").classList.toggle("hidden");
+}
+</script>
+<script type="module">
+import {createClient} from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+const supabase=createClient(
+'https://fstxhzsvvzthqqcisfdz.supabase.co',
+'sb_publishable_k8cAOGYerAOOFsf_UghhyQ_WfVu8buP'
+);
+window.login=async function(){
+const email=document.getElementById("email").value.trim();
+const password=document.getElementById("password").value;
+const message=document.getElementById("message");
+message.textContent="লগইন হচ্ছে...";
+const {error}=await supabase.auth.signInWithPassword({email,password});
+message.textContent=error?"লগইন হয়নি: "+error.message:"লগইন সফল হয়েছে!";
+};
+</script>
 </body>
 </html>
