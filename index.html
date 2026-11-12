@@ -14,12 +14,16 @@ nav a{margin:8px;color:#713b83;text-decoration:none}
 .container{max-width:850px;margin:20px auto;padding:15px}
 .card{background:white;padding:18px;border-radius:12px;margin:15px 0}
 button{background:#713b83;color:white;border:0;padding:12px 18px;border-radius:7px;cursor:pointer}
+input,textarea{width:100%;padding:12px;margin:8px 0;border:1px solid #ccc;border-radius:7px}
 .products{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:15px}
 .product{background:white;padding:12px;border-radius:10px;box-shadow:0 2px 8px #ddd}
 .product img{width:100%;height:150px;object-fit:contain}
 .product h3{font-size:17px}
 .price{color:#713b83;font-weight:bold}
+.orderForm{display:none;background:#f8f2fa;padding:12px;border-radius:8px;margin-top:12px}
+.orderForm button{width:100%;margin-top:8px}
 footer{text-align:center;padding:20px;background:#eee}
+.message{font-size:14px;overflow-wrap:anywhere}
 </style>
 </head>
 <body>
@@ -50,7 +54,7 @@ footer{text-align:center;padding:20px;background:#eee}
 <h2>যোগাযোগ</h2>
 <p>WhatsApp: 8801611385067</p>
 <a href="https://wa.me/8801611385067">
-<button>WhatsApp-এ অর্ডার করুন</button>
+<button>WhatsApp-এ যোগাযোগ করুন</button>
 </a>
 </div>
 
@@ -120,14 +124,136 @@ desc.textContent=p.description;
 item.appendChild(desc);
 }
 
-const order=document.createElement('button');
-order.textContent='WhatsApp-এ অর্ডার';
-order.onclick=()=>{
+// WhatsApp অর্ডার
+const whatsapp=document.createElement('button');
+whatsapp.textContent='WhatsApp-এ অর্ডার';
+whatsapp.style.width='100%';
+whatsapp.onclick=()=>{
 const message='আমি '+p.name+' অর্ডার করতে চাই। দাম: '+p.price+' টাকা';
-window.open('https://wa.me/8801611385067?text='+encodeURIComponent(message),'_blank');
+window.open(
+'https://wa.me/8801611385067?text='+encodeURIComponent(message),
+'_blank'
+);
 };
-item.appendChild(order);
+item.appendChild(whatsapp);
 
+// ওয়েবসাইট অর্ডার বাটন
+const orderButton=document.createElement('button');
+orderButton.textContent='ওয়েবসাইটে অর্ডার করুন';
+orderButton.style.width='100%';
+orderButton.style.marginTop='8px';
+item.appendChild(orderButton);
+
+// অর্ডার ফরম
+const form=document.createElement('form');
+form.className='orderForm';
+
+const heading=document.createElement('h3');
+heading.textContent='অর্ডার ফরম';
+form.appendChild(heading);
+
+const customer=document.createElement('input');
+customer.placeholder='আপনার নাম';
+customer.required=true;
+customer.maxLength=100;
+form.appendChild(customer);
+
+const phone=document.createElement('input');
+phone.placeholder='মোবাইল নম্বর';
+phone.type='tel';
+phone.required=true;
+phone.maxLength=20;
+form.appendChild(phone);
+
+const address=document.createElement('textarea');
+address.placeholder='সম্পূর্ণ ঠিকানা';
+address.required=true;
+address.maxLength=500;
+form.appendChild(address);
+
+const quantity=document.createElement('input');
+quantity.type='number';
+quantity.min='1';
+quantity.max='100';
+quantity.value='1';
+quantity.required=true;
+quantity.placeholder='পরিমাণ';
+form.appendChild(quantity);
+
+const total=document.createElement('p');
+total.className='price';
+total.textContent='মোট: '+p.price+' টাকা';
+form.appendChild(total);
+
+quantity.addEventListener('input',()=>{
+const q=Number(quantity.value);
+total.textContent='মোট: '+(q>0?q*Number(p.price):0)+' টাকা';
+});
+
+const submit=document.createElement('button');
+submit.type='submit';
+submit.textContent='অর্ডার নিশ্চিত করুন';
+form.appendChild(submit);
+
+const result=document.createElement('p');
+result.className='message';
+form.appendChild(result);
+
+orderButton.onclick=()=>{
+form.style.display=form.style.display==='block'?'none':'block';
+};
+
+form.addEventListener('submit',async(e)=>{
+e.preventDefault();
+
+const q=Number(quantity.value);
+const customerName=customer.value.trim();
+const customerPhone=phone.value.trim();
+const customerAddress=address.value.trim();
+
+if(!customerName||!customerPhone||!customerAddress||!Number.isInteger(q)||q<1||q>100){
+result.textContent='সঠিক তথ্য দিয়ে আবার চেষ্টা করুন।';
+return;
+}
+
+submit.disabled=true;
+submit.textContent='অর্ডার জমা হচ্ছে...';
+result.textContent='অপেক্ষা করুন...';
+
+try{
+const {data,error}=await supabase
+.from('orders')
+.insert([{
+customer_name:customerName,
+phone:customerPhone,
+address:customerAddress,
+product_id:p.id,
+quantity:q,
+total_amount:Number(p.price)*q,
+status:'নতুন'
+}])
+.select('id')
+.single();
+
+if(error){
+result.textContent='অর্ডার জমা হয়নি: '+error.message;
+submit.disabled=false;
+submit.textContent='আবার চেষ্টা করুন';
+return;
+}
+
+result.textContent='আপনার অর্ডার সফল হয়েছে! অর্ডার নম্বর: '+data.id;
+form.reset();
+total.textContent='মোট: '+p.price+' টাকা';
+submit.textContent='অর্ডার সম্পন্ন হয়েছে';
+}catch(error){
+result.textContent='সমস্যা হয়েছে: '+error.message;
+submit.disabled=false;
+submit.textContent='আবার চেষ্টা করুন';
+}
+});
+
+item.appendChild(form);
 box.appendChild(item);
 });
 }
