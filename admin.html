@@ -113,7 +113,32 @@ document.getElementById('category').value='';
 document.getElementById('photo').value='';
 await loadProducts();
 };
+window.editProduct=async function(id,name,description,price,category){
+const n=prompt('নতুন পণ্যের নাম:',name);
+if(n===null)return;
+const d=prompt('নতুন বিবরণ:',description||'');
+if(d===null)return;
+const p=prompt('নতুন দাম:',price);
+if(p===null||p.trim()===''||!Number.isFinite(Number(p))||Number(p)<0)return alert('সঠিক দাম দিন');
+const c=prompt('নতুন ক্যাটাগরি:',category||'');
+if(c===null)return;
 
+const {error}=await supabase.from('products').update({
+name:n.trim(),description:d.trim(),price:Number(p),category:c.trim()
+}).eq('id',id);
+
+if(error){alert(error.message);return;}
+alert('পণ্য আপডেট হয়েছে');
+await loadProducts();
+};
+
+window.deleteProduct=async function(id){
+if(!confirm('পণ্যটি মুছে ফেলতে চান?'))return;
+const {error}=await supabase.from('products').delete().eq('id',id);
+if(error){alert(error.message);return;}
+alert('পণ্য মুছে ফেলা হয়েছে');
+await loadProducts();
+};
 async function loadProducts(){
 const box=document.getElementById('products');
 const {data,error}=await supabase.from('products')
