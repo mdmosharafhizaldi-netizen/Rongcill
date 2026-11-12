@@ -4,292 +4,229 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>রঙচিল Admin Panel</title>
+<title>রঙচিল | স্বপ্নের ছোঁয়া</title>
 <style>
 *{box-sizing:border-box}
-body{font-family:Arial,sans-serif;background:#f5f0fa;padding:15px;color:#222}
-.container{max-width:600px;margin:auto;background:white;padding:18px;border-radius:12px}
-h2,h3{color:#673ab7}
-input,textarea,button,select{width:100%;padding:12px;margin:7px 0;border:1px solid #ccc;border-radius:7px;font-size:15px}
-button{background:#673ab7;color:white;border:0;font-weight:bold}
-button.danger{background:#d32f2f}
-button.secondary{background:#555}
-.product,.order{border:1px solid #ddd;padding:12px;margin:12px 0;border-radius:8px}
-.product img{width:100%;max-height:180px;object-fit:contain}
-.hidden{display:none}
+body{margin:0;font-family:Arial,sans-serif;background:#fff8fc;color:#333}
+header{background:#7b2d68;color:white;text-align:center;padding:25px 12px}
+header h1{margin:0;font-size:32px}
+header p{margin:8px 0 0}
+.container{max-width:1000px;margin:auto;padding:15px}
+h2{color:#7b2d68;text-align:center}
+.products{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px}
+.card{background:white;border-radius:12px;padding:13px;box-shadow:0 2px 10px #ddd}
+.card img{width:100%;height:190px;object-fit:contain;border-radius:8px}
+.card h3{color:#7b2d68;margin-bottom:5px}
+.price{font-size:19px;font-weight:bold;color:#d63384}
+.stock{color:#287a37}
+input,textarea,button{width:100%;padding:11px;margin:6px 0;border:1px solid #ccc;border-radius:7px;font-size:15px}
+button{border:0;background:#7b2d68;color:white;font-weight:bold;cursor:pointer}
+.whatsapp{background:#159447}
+button:disabled{background:#999}
+#message{text-align:center;font-weight:bold}
+footer{text-align:center;padding:20px;background:#7b2d68;color:white;margin-top:25px}
 </style>
 </head>
 <body>
+
+<header>
+<h1>রঙচিল</h1>
+<p>স্বপ্নের ছোঁয়া</p>
+<p>আপনার পছন্দের পণ্য, আপনার হাতেই</p>
+</header>
+
 <div class="container">
-<h2>রঙচিল Admin Panel</h2>
-
-<div id="loginBox">
-<h3>Admin Login</h3>
-<input id="email" type="email" placeholder="Admin Email">
-<input id="password" type="password" placeholder="Password">
-<button onclick="login()">লগইন করুন</button>
-<p id="loginMsg"></p>
+<h2>আমাদের পণ্যসমূহ</h2>
+<p id="message">পণ্য লোড হচ্ছে...</p>
+<div class="products" id="products"></div>
 </div>
 
-<div id="panel" class="hidden">
-<button class="secondary" onclick="logout()">লগআউট</button>
-<hr>
-<h3>নতুন পণ্য যোগ করুন</h3>
-<input id="name" placeholder="পণ্যের নাম">
-<textarea id="description" placeholder="পণ্যের বিবরণ"></textarea>
-<input id="price" type="number" min="0" placeholder="পণ্যের দাম">
-<input id="stock" type="number" min="0" step="1" placeholder="পণ্যের স্টক সংখ্যা">
-<input id="category" placeholder="ক্যাটাগরি">
-<label>পণ্যের ছবি</label>
-<input id="image" type="file" accept="image/*">
-<button onclick="addProduct()">পণ্য যোগ করুন</button>
-<p id="productMsg"></p>
-
-<hr>
-<h3>পণ্যের তালিকা</h3>
-<div id="productList">লোড হচ্ছে...</div>
-
-<hr>
-<h3>কাস্টমারের অর্ডার</h3>
-<div id="orderList">লোড হচ্ছে...</div>
-</div>
-</div>
+<footer>
+<p>রঙচিল | স্বপ্নের ছোঁয়া</p>
+<p>অর্ডার করতে WhatsApp ব্যবহার করুন</p>
+</footer>
 
 <script type="module">
 import {createClient} from 'https://esm.sh/@supabase/supabase-js@2';
 
 const SUPABASE_URL='https://fstxhzsvvzthqqcisfdz.supabase.co';
 const SUPABASE_KEY='sb_publishable_k8cAOGYerAOOFsf_UghhyQ_WfVu8buP';
+const WHATSAPP='8801611385067';
 
 const supabase=createClient(SUPABASE_URL,SUPABASE_KEY);
-const $=id=>document.getElementById(id);
+const productsBox=document.getElementById('products');
+const message=document.getElementById('message');
 
-window.login=async function(){
- $('loginMsg').textContent='লগইন হচ্ছে...';
- const {error}=await supabase.auth.signInWithPassword({
-  email:$('email').value.trim(),
-  password:$('password').value
- });
- if(error){
-  $('loginMsg').textContent='লগইন হয়নি: '+error.message;
-  return;
- }
- await showPanel();
-};
-
-window.logout=async function(){
- await supabase.auth.signOut();
- $('panel').classList.add('hidden');
- $('loginBox').classList.remove('hidden');
-};
-
-async function showPanel(){
- $('loginBox').classList.add('hidden');
- $('panel').classList.remove('hidden');
- await loadProducts();
- await window.loadOrders();
+function makeElement(tag,text,className){
+ const el=document.createElement(tag);
+ if(text!==undefined)el.textContent=text;
+ if(className)el.className=className;
+ return el;
 }
-
-window.addProduct=async function(){
- const name=$('name').value.trim();
- const description=$('description').value.trim();
- const price=Number($('price').value);
- const stock=Number($('stock').value);
- const category=$('category').value.trim();
- const file=$('image').files[0];
-
- if(!name||$('price').value===''||$('stock').value===''){
-  alert('পণ্যের নাম, দাম ও স্টক দিন');
-  return;
- }
- if(!Number.isFinite(price)||price<0||
- !Number.isInteger(stock)||stock<0){
-  alert('দাম ও স্টকের সঠিক সংখ্যা দিন');
-  return;
- }
-
- $('productMsg').textContent='পণ্য যোগ হচ্ছে...';
- let image_url=null;
-
- if(file){
-  const ext=file.name.split('.').pop().toLowerCase();
-  const fileName=Date.now()+'-'+Math.random().toString(36).slice(2)+'.'+ext;
-  const {error:uploadError}=await supabase.storage
-   .from('product-media').upload(fileName,file);
-  if(uploadError){
-   $('productMsg').textContent='ছবি আপলোড হয়নি: '+uploadError.message;
-   return;
-  }
-  const {data:urlData}=supabase.storage
-   .from('product-media').getPublicUrl(fileName);
-  image_url=urlData.publicUrl;
- }
-
- const {error}=await supabase.from('products').insert({
-  name,description,price,stock,category,image_url,is_active:true
- });
-
- if(error){
-  $('productMsg').textContent='পণ্য যোগ হয়নি: '+error.message;
-  return;
- }
-
- $('productMsg').textContent='পণ্য সফলভাবে যোগ হয়েছে';
- ['name','description','price','stock','category','image'].forEach(id=>$(id).value='');
- await loadProducts();
-};
 
 async function loadProducts(){
- $('productList').textContent='লোড হচ্ছে...';
- const {data,error}=await supabase.from('products')
-  .select('*').order('id',{ascending:false});
+ message.textContent='পণ্য লোড হচ্ছে...';
+ productsBox.replaceChildren();
+
+ const {data,error}=await supabase
+  .from('products')
+  .select('id,name,description,price,stock,category,image_url,video_url')
+  .eq('is_active',true)
+  .order('id',{ascending:false});
 
  if(error){
-  $('productList').textContent='পণ্য লোড হয়নি: '+error.message;
-  return;
- }
- if(!data||data.length===0){
-  $('productList').textContent='এখনো কোনো পণ্য নেই';
+  message.textContent='পণ্য লোড হয়নি। আবার চেষ্টা করুন।';
+  console.error(error);
   return;
  }
 
- $('productList').innerHTML='';
+ if(!data||data.length===0){
+  message.textContent='এখনো কোনো পণ্য পাওয়া যায়নি।';
+  return;
+ }
+
+ message.textContent='';
+
  data.forEach(p=>{
-  const div=document.createElement('div');
-  div.className='product';
+  const card=makeElement('div',undefined,'card');
 
   if(p.image_url){
-   const img=document.createElement('img');
+   const img=makeElement('img');
    img.src=p.image_url;
    img.alt=p.name;
-   div.appendChild(img);
+   card.appendChild(img);
   }
 
-  const title=document.createElement('h3');
-  title.textContent=p.name;
-  div.appendChild(title);
+  card.appendChild(makeElement('h3',p.name));
+  if(p.category)card.appendChild(makeElement('p','ক্যাটাগরি: '+p.category));
+  if(p.description)card.appendChild(makeElement('p',p.description));
+  card.appendChild(makeElement('p','দাম: '+p.price+' টাকা','price'));
 
-  const info=document.createElement('p');
-  info.textContent='দাম: '+p.price+' টাকা | স্টক: '+(p.stock??'নির্ধারিত নয়');
-  div.appendChild(info);
+  const stock=Number(p.stock);
+  card.appendChild(makeElement('p',
+   'স্টক: '+(p.stock===null?'নির্ধারিত নয়':stock+' টি'),
+   'stock'
+  ));
 
-  const edit=document.createElement('button');
-  edit.textContent='এডিট / স্টক পরিবর্তন';
-  edit.onclick=()=>window.editProduct(p);
-  div.appendChild(edit);
+  if(p.video_url){
+   const video=makeElement('a','ভিডিও দেখুন');
+   video.href=p.video_url;
+   video.target='_blank';
+   video.rel='noopener';
+   card.appendChild(video);
+  }
 
-  const del=document.createElement('button');
-  del.textContent='ডিলিট করুন';
-  del.className='danger';
-  del.onclick=()=>window.deleteProduct(p.id);
-  div.appendChild(del);
+  const name=makeElement('input');
+  name.placeholder='আপনার নাম';
+  name.autocomplete='name';
 
-  $('productList').appendChild(div);
+  const phone=makeElement('input');
+  phone.placeholder='মোবাইল নম্বর';
+  phone.type='tel';
+  phone.autocomplete='tel';
+
+  const address=makeElement('textarea');
+  address.placeholder='সম্পূর্ণ ঠিকানা';
+
+  const quantity=makeElement('input');
+  quantity.type='number';
+  quantity.min='1';
+  quantity.max=String(Math.min(stock||1,100));
+  quantity.value='1';
+  quantity.placeholder='পরিমাণ';
+
+  const orderButton=makeElement('button','ওয়েবসাইট থেকে অর্ডার করুন');
+  const whatsappButton=makeElement('button','WhatsApp-এ অর্ডার করুন','whatsapp');
+
+  if(!Number.isInteger(stock)||stock<1){
+   orderButton.disabled=true;
+   whatsappButton.disabled=true;
+   quantity.disabled=true;
+   card.appendChild(makeElement('p','স্টক শেষ','stock'));
+  }
+
+  orderButton.onclick=async()=>{
+   const customerName=name.value.trim();
+   const customerPhone=phone.value.trim();
+   const customerAddress=address.value.trim();
+   const q=Number(quantity.value);
+
+   if(!customerName||!customerPhone||!customerAddress){
+    alert('নাম, মোবাইল ও ঠিকানা পূরণ করুন');
+    return;
+   }
+
+   if(!Number.isInteger(q)||q<1||q>100){
+    alert('সঠিক পরিমাণ দিন');
+    return;
+   }
+
+   orderButton.disabled=true;
+   orderButton.textContent='অর্ডার হচ্ছে...';
+
+   try{
+    const {data,error}=await supabase.rpc('place_order',{
+     p_product_id:p.id,
+     p_customer_name:customerName,
+     p_phone:customerPhone,
+     p_address:customerAddress,
+     p_quantity:q
+    });
+
+    if(error)throw error;
+
+    const result=Array.isArray(data)?data[0]:data;
+    alert('অর্ডার সফল হয়েছে!\nঅর্ডার নম্বর: '+result.order_id+
+     '\nমোট টাকা: '+result.total_amount);
+
+    await loadProducts();
+   }catch(error){
+    alert('অর্ডার হয়নি: '+error.message);
+    orderButton.disabled=false;
+    orderButton.textContent='ওয়েবসাইট থেকে অর্ডার করুন';
+   }
+  };
+
+  whatsappButton.onclick=()=>{
+   const customerName=name.value.trim();
+   const customerPhone=phone.value.trim();
+   const customerAddress=address.value.trim();
+   const q=Number(quantity.value);
+
+   if(!customerName||!customerPhone||!customerAddress){
+    alert('নাম, মোবাইল ও ঠিকানা পূরণ করুন');
+    return;
+   }
+   if(!Number.isInteger(q)||q<1||q>100){
+    alert('সঠিক পরিমাণ দিন');
+    return;
+   }
+
+   const text='রঙচিল থেকে অর্ডার করতে চাই।\n'+
+    'পণ্য: '+p.name+'\n'+
+    'পণ্যের ID: '+p.id+'\n'+
+    'দাম: '+p.price+' টাকা\n'+
+    'পরিমাণ: '+q+'\n'+
+    'নাম: '+customerName+'\n'+
+    'মোবাইল: '+customerPhone+'\n'+
+    'ঠিকানা: '+customerAddress;
+
+   window.open('https://wa.me/'+WHATSAPP+
+    '?text='+encodeURIComponent(text),'_blank');
+  };
+
+  card.appendChild(name);
+  card.appendChild(phone);
+  card.appendChild(address);
+  card.appendChild(quantity);
+  card.appendChild(orderButton);
+  card.appendChild(whatsappButton);
+
+  productsBox.appendChild(card);
  });
 }
 
-window.editProduct=async function(p){
- const name=prompt('পণ্যের নাম:',p.name);
- if(name===null)return;
- const priceText=prompt('পণ্যের দাম:',p.price);
- if(priceText===null)return;
- const stockText=prompt('পণ্যের স্টক:',p.stock??0);
- if(stockText===null)return;
- const description=prompt('পণ্যের বিবরণ:',p.description||'');
- if(description===null)return;
- const category=prompt('ক্যাটাগরি:',p.category||'');
- if(category===null)return;
-
- const price=Number(priceText);
- const stock=Number(stockText);
- if(!name.trim()||priceText.trim()===''||stockText.trim()===''||
- !Number.isFinite(price)||price<0||
- !Number.isInteger(stock)||stock<0){
-  alert('সঠিক তথ্য দিন');
-  return;
- }
-
- const {error}=await supabase.from('products').update({
-  name:name.trim(),price,stock,description,category
- }).eq('id',p.id);
-
- if(error){
-  alert('আপডেট হয়নি: '+error.message);
-  return;
- }
- alert('পণ্য আপডেট হয়েছে');
- await loadProducts();
-};
-
-window.deleteProduct=async function(id){
- if(!confirm('পণ্যটি ডিলিট করতে চান?'))return;
- const {error}=await supabase.from('products').delete().eq('id',id);
- if(error){
-  alert('ডিলিট হয়নি: '+error.message);
-  return;
- }
- alert('পণ্য ডিলিট হয়েছে');
- await loadProducts();
-};
-
-window.loadOrders=async function(){
- $('orderList').textContent='লোড হচ্ছে...';
- const {data,error}=await supabase.from('orders')
-  .select('*').order('id',{ascending:false});
-
- if(error){
-  $('orderList').textContent='অর্ডার লোড হয়নি: '+error.message;
-  return;
- }
- if(!data||data.length===0){
-  $('orderList').textContent='এখনো কোনো অর্ডার নেই';
-  return;
- }
-
- $('orderList').innerHTML='';
- data.forEach(o=>{
-  const div=document.createElement('div');
-  div.className='order';
-
-  const details=document.createElement('p');
-  details.style.whiteSpace='pre-line';
-  details.textContent='অর্ডার নম্বর: '+o.id+
-   '\nনাম: '+o.customer_name+
-   '\nমোবাইল: '+o.phone+
-   '\nঠিকানা: '+o.address+
-   '\nপণ্যের ID: '+o.product_id+
-   '\nপরিমাণ: '+o.quantity+
-   '\nমোট টাকা: '+o.total_amount;
-  div.appendChild(details);
-
-  const select=document.createElement('select');
-  const statuses=['নতুন','নিশ্চিত','প্রস্তুত','পাঠানো','সম্পন্ন','বাতিল'];
-  if(o.status&&!statuses.includes(o.status))statuses.unshift(o.status);
-
-  statuses.forEach(s=>{
-   const option=document.createElement('option');
-   option.value=s;
-   option.textContent=s;
-   select.appendChild(option);
-  });
-  select.value=o.status||'নতুন';
-  div.appendChild(select);
-
-  const save=document.createElement('button');
-  save.textContent='স্ট্যাটাস সেভ করুন';
-  save.onclick=async()=>{
-   const {error}=await supabase.from('orders')
-    .update({status:select.value}).eq('id',o.id);
-   if(error)alert('সেভ হয়নি: '+error.message);
-   else alert('অর্ডারের স্ট্যাটাস সেভ হয়েছে');
-  };
-  div.appendChild(save);
-  $('orderList').appendChild(div);
- });
-};
-
-const {data:{session}}=await supabase.auth.getSession();
-if(session)await showPanel();
+loadProducts();
 </script>
 </body>
 </html>
