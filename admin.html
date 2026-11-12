@@ -9,7 +9,7 @@
 body{font-family:Arial;background:#f5f0fa;padding:20px;color:#222}
 .container{max-width:500px;margin:auto;background:white;padding:20px;border-radius:12px}
 h2{text-align:center;color:#7027a0}
-input,textarea,button{width:100%;padding:12px;margin:8px 0;box-sizing:border-box;border:1px solid #ccc;border-radius:6px}
+input,textarea,button,select{width:100%;padding:12px;margin:8px 0;box-sizing:border-box;border:1px solid #ccc;border-radius:6px}
 button{background:#7027a0;color:white;border:0;font-size:16px}
 .product{padding:12px;border:1px solid #ddd;margin:12px 0;border-radius:8px}
 .product img{max-width:100%;max-height:150px;object-fit:contain}
@@ -17,6 +17,7 @@ button{background:#7027a0;color:white;border:0;font-size:16px}
 </style>
 </head>
 <body>
+
 <div class="container">
 <h2>রঙচিল Admin Panel</h2>
 
@@ -31,6 +32,7 @@ button{background:#7027a0;color:white;border:0;font-size:16px}
 <div id="panel" class="hidden">
 <p>আপনি Admin হিসেবে লগইন করেছেন।</p>
 <button onclick="logout()">লগআউট</button>
+
 <hr>
 <h3>নতুন পণ্য যোগ করুন</h3>
 <input id="name" placeholder="পণ্যের নাম">
@@ -41,15 +43,18 @@ button{background:#7027a0;color:white;border:0;font-size:16px}
 <input id="photo" type="file" accept="image/*">
 <button onclick="addProduct()">পণ্য যোগ করুন</button>
 <p id="msg"></p>
+
 <hr>
 <h3>পণ্যের তালিকা</h3>
 <div id="products">লোড হচ্ছে...</div>
-</div>
-</div>
+
 <hr>
 <h3>কাস্টমারের অর্ডার</h3>
 <button onclick="loadOrders()">অর্ডার রিফ্রেশ করুন</button>
 <div id="orders">অর্ডার লোড হচ্ছে...</div>
+</div>
+</div>
+
 <script type="module">
 import {createClient} from
 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
@@ -59,92 +64,12 @@ const supabase=createClient(
 'sb_publishable_k8cAOGYerAOOFsf_UghhyQ_WfVu8buP'
 );
 
-window.login=async function(){
-const email=document.getElementById('email').value.trim();
-const password=document.getElementById('password').value;
-const msg=document.getElementById('loginMsg');
-msg.textContent='লগইন হচ্ছে...';
-
-const {error}=await supabase.auth.signInWithPassword({email,password});
-if(error){msg.textContent='লগইন হয়নি: '+error.message;return;}
-await showPanel();
-};
-
-async function showPanel(){
-document.getElementById('login').classList.add('hidden');
-document.getElementById('panel').classList.remove('hidden');
-await loadProducts();
-}
-await window.loadOrders();
-window.logout=async function(){
-await supabase.auth.signOut();
-document.getElementById('panel').classList.add('hidden');
-document.getElementById('login').classList.remove('hidden');
-};
-
-window.addProduct=async function(){
-const msg=document.getElementById('msg');
-msg.textContent='পণ্য যোগ হচ্ছে...';
-
-const name=document.getElementById('name').value.trim();
-const description=document.getElementById('description').value.trim();
-const price=Number(document.getElementById('price').value||0);
-const category=document.getElementById('category').value.trim();
-const photo=document.getElementById('photo').files[0];
-let image_url=null;
-
-if(!name){msg.textContent='পণ্যের নাম লিখুন।';return;}
-
-if(photo){
-const safeName=Date.now()+'-'+photo.name.replace(/[^a-zA-Z0-9._-]/g,'_');
-const {error:uploadError}=await supabase.storage.from('product-media').upload(safeName,photo);
-if(uploadError){msg.textContent='ছবি আপলোড হয়নি: '+uploadError.message;return;}
-image_url=supabase.storage.from('product-media').getPublicUrl(safeName).data.publicUrl;
-}
-
-const {error}=await supabase.from('products').insert([{
-name,description,price,category,image_url,is_active:true
-}]);
-
-if(error){msg.textContent='পণ্য যোগ হয়নি: '+error.message;return;}
-
-msg.textContent='পণ্য সফলভাবে যোগ হয়েছে!';
-document.getElementById('name').value='';
-document.getElementById('description').value='';
-document.getElementById('price').value='';
-document.getElementById('category').value='';
-document.getElementById('photo').value='';
-await loadProducts();
-};
-window.editProduct=async function(id,name,description,price,category){
-const n=prompt('নতুন পণ্যের নাম:',name);
-if(n===null)return;
-const d=prompt('নতুন বিবরণ:',description||'');
-if(d===null)return;
-const p=prompt('নতুন দাম:',price);
-if(p===null||p.trim()===''||!Number.isFinite(Number(p))||Number(p)<0)return alert('সঠিক দাম দিন');
-const c=prompt('নতুন ক্যাটাগরি:',category||'');
-if(c===null)return;
-
-const {error}=await supabase.from('products').update({
-name:n.trim(),description:d.trim(),price:Number(p),category:c.trim()
-}).eq('id',id);
-
-if(error){alert(error.message);return;}
-alert('পণ্য আপডেট হয়েছে');
-await loadProducts();
-};
-
-window.deleteProduct=async function(id){
-if(!confirm('পণ্যটি মুছে ফেলতে চান?'))return;
-const {error}=await supabase.from('products').delete().eq('id',id);
-if(error){alert(error.message);return;}
-alert('পণ্য মুছে ফেলা হয়েছে');
-await loadProducts();
-};window.loadOrders = async function(){
+// অর্ডার লোড
+window.loadOrders=async function(){
 const box=document.getElementById('orders');
 box.textContent='অর্ডার লোড হচ্ছে...';
 
+try{
 const {data,error}=await supabase
 .from('orders')
 .select('*')
@@ -157,7 +82,7 @@ return;
 
 box.innerHTML='';
 
-if(!data.length){
+if(!data || data.length===0){
 box.textContent='এখনো কোনো অর্ডার নেই।';
 return;
 }
@@ -169,19 +94,24 @@ item.className='product';
 const info=document.createElement('p');
 info.textContent=
 'অর্ডার #'+o.id+
-' | কাস্টমার: '+o.customer_name+
-' | ফোন: '+o.phone+
-' | ঠিকানা: '+o.address+
+' | কাস্টমার: '+(o.customer_name||'')+
+' | ফোন: '+(o.phone||'')+
+' | ঠিকানা: '+(o.address||'')+
 ' | পণ্য ID: '+o.product_id+
 ' | পরিমাণ: '+o.quantity+
 ' | মোট: '+o.total_amount+' টাকা'+
-' | অবস্থা: '+o.status;
+' | অবস্থা: '+(o.status||'');
 
 item.appendChild(info);
 
 const select=document.createElement('select');
+const statuses=['নতুন','নিশ্চিত','প্রস্তুত','পাঠানো','সম্পন্ন','বাতিল'];
 
-['নতুন','নিশ্চিত','প্রস্তুত','পাঠানো','সম্পন্ন','বাতিল'].forEach(s=>{
+if(o.status && !statuses.includes(o.status)){
+statuses.unshift(o.status);
+}
+
+statuses.forEach(s=>{
 const option=document.createElement('option');
 option.value=s;
 option.textContent=s;
@@ -200,7 +130,11 @@ const {error}=await supabase
 .update({status:select.value})
 .eq('id',o.id);
 
-if(error){alert('সেভ হয়নি: '+error.message);return;}
+if(error){
+alert('সেভ হয়নি: '+error.message);
+return;
+}
+
 alert('অর্ডারের স্ট্যাটাস পরিবর্তন হয়েছে!');
 await window.loadOrders();
 };
@@ -208,19 +142,37 @@ await window.loadOrders();
 item.appendChild(btn);
 box.appendChild(item);
 });
+
+}catch(error){
+box.textContent='সমস্যা হয়েছে: '+error.message;
+}
 };
+
+// পণ্য লোড
 async function loadProducts(){
 const box=document.getElementById('products');
-const {data,error}=await supabase.from('products')
-.select('*').order('id',{ascending:false});
 
-if(error){box.textContent='পণ্য লোড হয়নি: '+error.message;return;}
+const {data,error}=await supabase
+.from('products')
+.select('*')
+.order('id',{ascending:false});
+
+if(error){
+box.textContent='পণ্য লোড হয়নি: '+error.message;
+return;
+}
+
 box.innerHTML='';
-if(!data.length){box.textContent='এখনো কোনো পণ্য যোগ করা হয়নি।';return;}
+
+if(!data || data.length===0){
+box.textContent='এখনো কোনো পণ্য যোগ করা হয়নি।';
+return;
+}
 
 data.forEach(p=>{
 const item=document.createElement('div');
 item.className='product';
+
 const title=document.createElement('h4');
 title.textContent=p.name;
 item.appendChild(title);
@@ -238,9 +190,13 @@ item.appendChild(details);
 
 const desc=document.createElement('p');
 desc.textContent=p.description||'';
-item.appendChild(desc);const edit=document.createElement('button');
+item.appendChild(desc);
+
+const edit=document.createElement('button');
 edit.textContent='এডিট করুন';
-edit.onclick=()=>window.editProduct(p.id,p.name,p.description,p.price,p.category);
+edit.onclick=()=>window.editProduct(
+p.id,p.name,p.description,p.price,p.category
+);
 item.appendChild(edit);
 
 const del=document.createElement('button');
@@ -248,12 +204,161 @@ del.textContent='মুছে ফেলুন';
 del.style.background='#c62828';
 del.onclick=()=>window.deleteProduct(p.id);
 item.appendChild(del);
+
 box.appendChild(item);
 });
 }
 
+// লগইন করার পর প্যানেল দেখানো
+async function showPanel(){
+document.getElementById('login').classList.add('hidden');
+document.getElementById('panel').classList.remove('hidden');
+
+await loadProducts();
+await window.loadOrders();
+}
+
+// লগইন
+window.login=async function(){
+const email=document.getElementById('email').value.trim();
+const password=document.getElementById('password').value;
+const msg=document.getElementById('loginMsg');
+
+msg.textContent='লগইন হচ্ছে...';
+
+const {error}=await supabase.auth.signInWithPassword({
+email,password
+});
+
+if(error){
+msg.textContent='লগইন হয়নি: '+error.message;
+return;
+}
+
+await showPanel();
+};
+
+// লগআউট
+window.logout=async function(){
+await supabase.auth.signOut();
+
+document.getElementById('panel').classList.add('hidden');
+document.getElementById('login').classList.remove('hidden');
+};
+
+// পণ্য যোগ
+window.addProduct=async function(){
+const msg=document.getElementById('msg');
+msg.textContent='পণ্য যোগ হচ্ছে...';
+
+const name=document.getElementById('name').value.trim();
+const description=document.getElementById('description').value.trim();
+const price=Number(document.getElementById('price').value||0);
+const category=document.getElementById('category').value.trim();
+const photo=document.getElementById('photo').files[0];
+
+let image_url=null;
+
+if(!name){
+msg.textContent='পণ্যের নাম লিখুন।';
+return;
+}
+
+if(photo){
+const safeName=Date.now()+'-'+photo.name.replace(/[^a-zA-Z0-9._-]/g,'_');
+
+const {error:uploadError}=await supabase
+.storage.from('product-media')
+.upload(safeName,photo);
+
+if(uploadError){
+msg.textContent='ছবি আপলোড হয়নি: '+uploadError.message;
+return;
+}
+
+image_url=supabase.storage
+.from('product-media')
+.getPublicUrl(safeName).data.publicUrl;
+}
+
+const {error}=await supabase.from('products').insert([{
+name,description,price,category,image_url,is_active:true
+}]);
+
+if(error){
+msg.textContent='পণ্য যোগ হয়নি: '+error.message;
+return;
+}
+
+msg.textContent='পণ্য সফলভাবে যোগ হয়েছে!';
+
+document.getElementById('name').value='';
+document.getElementById('description').value='';
+document.getElementById('price').value='';
+document.getElementById('category').value='';
+document.getElementById('photo').value='';
+
+await loadProducts();
+};
+
+// পণ্য এডিট
+window.editProduct=async function(id,name,description,price,category){
+const n=prompt('নতুন পণ্যের নাম:',name);
+if(n===null)return;
+
+const d=prompt('নতুন বিবরণ:',description||'');
+if(d===null)return;
+
+const p=prompt('নতুন দাম:',price);
+if(p===null||p.trim()===''||!Number.isFinite(Number(p))||Number(p)<0){
+alert('সঠিক দাম দিন');
+return;
+}
+
+const c=prompt('নতুন ক্যাটাগরি:',category||'');
+if(c===null)return;
+
+const {error}=await supabase.from('products')
+.update({
+name:n.trim(),
+description:d.trim(),
+price:Number(p),
+category:c.trim()
+}).eq('id',id);
+
+if(error){
+alert(error.message);
+return;
+}
+
+alert('পণ্য আপডেট হয়েছে');
+await loadProducts();
+};
+
+// পণ্য মুছে ফেলা
+window.deleteProduct=async function(id){
+if(!confirm('পণ্যটি মুছে ফেলতে চান?'))return;
+
+const {error}=await supabase
+.from('products')
+.delete()
+.eq('id',id);
+
+if(error){
+alert(error.message);
+return;
+}
+
+alert('পণ্য মুছে ফেলা হয়েছে');
+await loadProducts();
+};
+
+// আগে থেকেই লগইন থাকলে প্যানেল দেখানো
 const {data:{session}}=await supabase.auth.getSession();
-if(session) await showPanel();
+
+if(session){
+await showPanel();
+}
 </script>
 </body>
 </html>
