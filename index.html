@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="bn">
 <head>
@@ -8,23 +9,24 @@
 *{box-sizing:border-box}
 body{margin:0;font-family:Arial,sans-serif;background:#fff8fc;color:#333}
 header{background:#7b2d68;color:white;text-align:center;padding:25px 12px}
-header h1{margin:0;font-size:32px}
-header p{margin:8px 0 0}
-.container{max-width:1000px;margin:auto;padding:15px}
-h2{color:#7b2d68;text-align:center}
-.products{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px}
-.card{background:white;border-radius:12px;padding:13px;box-shadow:0 2px 10px #ddd}
-.card img{width:100%;height:190px;object-fit:contain;border-radius:8px}
-.card h3{color:#7b2d68;margin-bottom:5px}
-.price{font-size:19px;font-weight:bold;color:#d63384}
-.stock{color:#287a37}
-input,textarea,select,button{width:100%;padding:11px;margin:6px 0;border:1px solid #ccc;border-radius:7px;font-size:15px}
-button{border:0;background:#7b2d68;color:white;font-weight:bold;cursor:pointer}
-.whatsapp{background:#159447}
+header h1{margin:0;font-size:34px}
+header p{margin:8px 0}
+.container{max-width:1050px;margin:auto;padding:15px}
+h2{text-align:center;color:#7b2d68}
+.products{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px}
+.card{background:white;border-radius:13px;padding:14px;box-shadow:0 2px 12px #ddd}
+.card img{width:100%;height:210px;object-fit:contain;border-radius:8px}
+.card h3{color:#7b2d68}
+.price{font-size:20px;font-weight:bold;color:#d63384}
+.stock{color:#23833b}
+input,textarea,select,button{width:100%;padding:12px;margin:6px 0;border:1px solid #ccc;border-radius:7px;font-size:15px}
+button{background:#7b2d68;color:white;border:0;font-weight:bold;cursor:pointer}
 button:disabled{background:#999;cursor:not-allowed}
-.payment-info{background:#fff0f7;padding:10px;border-radius:7px;margin:6px 0;color:#7b2d68}
+.whatsapp{background:#159447}
+.payment-info{background:#fff0f7;padding:10px;border-radius:7px;color:#7b2d68;font-size:14px;margin:8px 0}
 #message{text-align:center;font-weight:bold}
-footer{text-align:center;padding:20px;background:#7b2d68;color:white;margin-top:25px}
+footer{background:#7b2d68;color:white;text-align:center;padding:22px;margin-top:30px}
+a{color:#7b2d68}
 </style>
 </head>
 <body>
@@ -42,8 +44,9 @@ footer{text-align:center;padding:20px;background:#7b2d68;color:white;margin-top:
 </div>
 
 <footer>
-<p>রঙচিল | স্বপ্নের ছোঁয়া</p>
+<h3>রঙচিল | স্বপ্নের ছোঁয়া</h3>
 <p>অর্ডার: 01611385067</p>
+<p>ধন্যবাদ আমাদের সঙ্গে থাকার জন্য।</p>
 </footer>
 
 <script type="module">
@@ -53,7 +56,7 @@ const SUPABASE_URL='https://fstxhzsvvzthqqcisfdz.supabase.co';
 const SUPABASE_KEY='sb_publishable_k8cAOGYerAOOFsf_UghhyQ_WfVu8buP';
 const WHATSAPP='8801611385067';
 
-// নিজের পেমেন্ট নম্বর বসান
+/* নিজের পেমেন্ট নম্বর এখানে বসাবেন */
 const PAYMENT_NUMBERS={
  'বিকাশ':'এখানে বিকাশ নম্বর বসান',
  'নগদ':'এখানে নগদ নম্বর বসান',
@@ -64,7 +67,7 @@ const supabase=createClient(SUPABASE_URL,SUPABASE_KEY);
 const productsBox=document.getElementById('products');
 const message=document.getElementById('message');
 
-function el(tag,text,className){
+function make(tag,text,className){
  const x=document.createElement(tag);
  if(text!==undefined)x.textContent=text;
  if(className)x.className=className;
@@ -76,10 +79,10 @@ async function loadProducts(){
  productsBox.replaceChildren();
 
  const {data,error}=await supabase
-  .from('products')
-  .select('id,name,description,price,stock,category,image_url,video_url')
-  .eq('is_active',true)
-  .order('id',{ascending:false});
+ .from('products')
+ .select('id,name,description,price,stock,category,image_url,video_url')
+ .eq('is_active',true)
+ .order('id',{ascending:false});
 
  if(error){
   message.textContent='পণ্য লোড হয়নি। আবার চেষ্টা করুন।';
@@ -95,70 +98,71 @@ async function loadProducts(){
  message.textContent='';
 
  data.forEach(p=>{
-  const card=el('div',undefined,'card');
+  const card=make('div',undefined,'card');
 
   if(p.image_url){
-   const img=el('img');
+   const img=make('img');
    img.src=p.image_url;
    img.alt=p.name;
    card.appendChild(img);
   }
 
-  card.appendChild(el('h3',p.name));
-  if(p.category)card.appendChild(el('p','ক্যাটাগরি: '+p.category));
-  if(p.description)card.appendChild(el('p',p.description));
-  card.appendChild(el('p','দাম: '+p.price+' টাকা','price'));
+  card.appendChild(make('h3',p.name));
+  if(p.category)card.appendChild(make('p','ক্যাটাগরি: '+p.category));
+  if(p.description)card.appendChild(make('p',p.description));
+  card.appendChild(make('p','দাম: '+p.price+' টাকা','price'));
 
   const stock=Number(p.stock);
-  card.appendChild(el('p','স্টক: '+stock+' টি','stock'));
+  card.appendChild(make('p','স্টক: '+stock+' টি','stock'));
 
   if(p.video_url){
-   const video=el('a','ভিডিও দেখুন');
+   const video=make('a','ভিডিও দেখুন');
    video.href=p.video_url;
    video.target='_blank';
    video.rel='noopener';
    card.appendChild(video);
   }
 
-  const name=el('input');
+  const name=make('input');
   name.placeholder='আপনার নাম';
   name.autocomplete='name';
 
-  const phone=el('input');
+  const phone=make('input');
   phone.placeholder='মোবাইল নম্বর';
   phone.type='tel';
   phone.autocomplete='tel';
 
-  const address=el('textarea');
+  const address=make('textarea');
   address.placeholder='সম্পূর্ণ ঠিকানা';
 
-  const quantity=el('input');
+  const quantity=make('input');
   quantity.type='number';
   quantity.min='1';
-  quantity.max=String(Math.min(stock||1,100));
+  quantity.max=String(Math.min(stock,100));
   quantity.value='1';
   quantity.placeholder='পরিমাণ';
 
-  const payment=el('select');
+  const payment=make('select');
+
   [
    ['ক্যাশ অন ডেলিভারি','ক্যাশ অন ডেলিভারি'],
    ['বিকাশ','বিকাশ'],
    ['নগদ','নগদ'],
    ['রকেট','রকেট']
   ].forEach(([value,label])=>{
-   const option=el('option',label);
+   const option=make('option',label);
    option.value=value;
    payment.appendChild(option);
   });
 
-  const cardOption=el('option','কার্ড পেমেন্ট (এখনো চালু হয়নি)');
+  const cardOption=make('option','কার্ড পেমেন্ট (শিগগিরই চালু হবে)');
   cardOption.disabled=true;
   payment.appendChild(cardOption);
 
-  const paymentInfo=el('div',undefined,'payment-info');
-  paymentInfo.textContent='ক্যাশ অন ডেলিভারি: পণ্য হাতে পেয়ে টাকা দিন।';
+  const paymentInfo=make('div',undefined,'payment-info');
+  paymentInfo.textContent='পণ্য হাতে পেয়ে টাকা পরিশোধ করুন।';
 
-  const transaction=el('input');
+  const transaction=make('input');
   transaction.placeholder='Transaction ID লিখুন';
   transaction.style.display='none';
 
@@ -171,19 +175,19 @@ async function loadProducts(){
    }else{
     paymentInfo.textContent=
      method+' নম্বর: '+PAYMENT_NUMBERS[method]+
-     ' | নম্বরটি যাচাই করে টাকা পাঠান।';
+     '। টাকা পাঠিয়ে Transaction ID দিন।';
     transaction.style.display='block';
    }
   };
 
-  const orderButton=el('button','অর্ডার করুন');
-  const whatsappButton=el('button','WhatsApp-এ অর্ডার করুন','whatsapp');
+  const orderButton=make('button','ওয়েবসাইট থেকে অর্ডার করুন');
+  const whatsappButton=make('button','WhatsApp-এ অর্ডার করুন','whatsapp');
 
   if(!Number.isInteger(stock)||stock<1){
    orderButton.disabled=true;
    whatsappButton.disabled=true;
    quantity.disabled=true;
-   card.appendChild(el('p','স্টক শেষ','stock'));
+   card.appendChild(make('p','স্টক শেষ','stock'));
   }
 
   orderButton.onclick=async()=>{
@@ -211,7 +215,7 @@ async function loadProducts(){
 
    if(method!=='ক্যাশ অন ডেলিভারি'&&
       PAYMENT_NUMBERS[method].includes('এখানে')){
-    alert('আগে কোডে আপনার '+method+' নম্বর বসান।');
+    alert('আগে নিজের '+method+' নম্বর কোডে বসান।');
     return;
    }
 
@@ -233,18 +237,20 @@ async function loadProducts(){
 
     const result=Array.isArray(data)?data[0]:data;
 
-    alert('অর্ডার সফল হয়েছে!'+
+    alert(
+     'অর্ডার সফল হয়েছে!'+
      '\nঅর্ডার নম্বর: '+result.order_id+
-     '\nমোট টাকা: '+result.total_amount+
+     '\nমোট টাকা: '+result.total_amount+' টাকা'+
      '\nপেমেন্ট: '+method+
-     '\nপেমেন্ট যাচাই করে অর্ডার নিশ্চিত করা হবে।');
+     '\nপেমেন্ট যাচাই করে অর্ডার নিশ্চিত করা হবে।'
+    );
 
     await loadProducts();
 
    }catch(error){
     alert('অর্ডার হয়নি: '+error.message);
     orderButton.disabled=false;
-    orderButton.textContent='অর্ডার করুন';
+    orderButton.textContent='ওয়েবসাইট থেকে অর্ডার করুন';
    }
   };
 
@@ -264,23 +270,28 @@ async function loadProducts(){
     return;
    }
 
-   const text='রঙচিল থেকে অর্ডার করতে চাই।\n'+
+   const text=
+    'রঙচিল থেকে অর্ডার করতে চাই।\n'+
     'পণ্য: '+p.name+'\n'+
     'দাম: '+p.price+' টাকা\n'+
     'পরিমাণ: '+q+'\n'+
+    'পেমেন্ট: '+payment.value+'\n'+
     'নাম: '+customer+'\n'+
     'মোবাইল: '+mobile+'\n'+
     'ঠিকানা: '+location;
 
-   window.open('https://wa.me/'+WHATSAPP+
-    '?text='+encodeURIComponent(text),'_blank');
+   window.open(
+    'https://wa.me/'+WHATSAPP+
+    '?text='+encodeURIComponent(text),
+    '_blank'
+   );
   };
 
   card.appendChild(name);
   card.appendChild(phone);
   card.appendChild(address);
   card.appendChild(quantity);
-  card.appendChild(el('p','পেমেন্ট পদ্ধতি নির্বাচন করুন'));
+  card.appendChild(make('p','পেমেন্ট পদ্ধতি নির্বাচন করুন'));
   card.appendChild(payment);
   card.appendChild(paymentInfo);
   card.appendChild(transaction);
